@@ -23,7 +23,8 @@ module Kaminari
     
     def paginate_without_count(scope, options = {}, &block)
       options[:total_pages] = scope.current_page
-      options[:total_pages] += 1 if scope.length == scope.limit_value
+      dups = scope.dup
+      options[:total_pages] += 1 if scope.length == scope.limit_value && dups.page(scope.current_page+1).per(scope.limit_value).exists?
   
       paginator = Kaminari::Helpers::PaginatorWithoutCount.new(self, options.reverse_merge(:current_page => scope.current_page, :per_page => scope.limit_value, :remote => false))
       paginator.to_s
